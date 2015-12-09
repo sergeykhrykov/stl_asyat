@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <conio.h>
 #include <iomanip>
+#include <chrono>
 
 struct Point {
 
@@ -245,6 +246,8 @@ int main(int argc, char *argv[]) {
   // Calculate volume
   cout << "Вычисление объема... ";
   
+  chrono::time_point<chrono::system_clock> start, end;
+  start = chrono::system_clock::now();
 
   for (i = 0; i < triangles.size(); ++i) {
     double x1, y1, z1, x2, y2, z2, x3, y3, z3;
@@ -312,6 +315,12 @@ int main(int argc, char *argv[]) {
   //negative << "endsolid negative";
   //positive.close();
   //negative.close();
+
+  end = chrono::system_clock::now();
+  chrono::duration<double> elapsed_seconds = end - start;
+  time_t end_time = chrono::system_clock::to_time_t(end);
+
+  cout << "Завершено за " << elapsed_seconds.count() << " с\n";
 
   cout << "Объем: " << V << endl;
 
