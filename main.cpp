@@ -230,21 +230,22 @@ int main(int argc, char *argv[]) {
     pts.push_back(pt.first);
 
   // DEBUG output volume elements to separate file
-  ofstream positive, negative;
+  //ofstream positive, negative;
+  //positive.open("debug_positive.stl");
+  //negative.open("debug_negative.stl");
+  //if (!positive.is_open() || !negative.is_open()) {
+  //  cerr << "Could not open debug files";
+  //  return 1;
+  //}
 
-  positive.open("debug_positive.stl");
-  negative.open("debug_negative.stl");
-
-  if (!positive.is_open() || !negative.is_open()) {
-    cerr << "Could not open debug files";
-    return 1;
-  }
-
-  // Put STL preamble
-  positive << "solid positive" << endl;
-  negative << "solid negative" << endl;
+  // DEBUG Put STL preamble
+  //positive << "solid positive" << endl;
+  //negative << "solid negative" << endl;
 
   // Calculate volume
+  cout << "ֲûקטסכוםטו מבתולא... ";
+  
+
   for (i = 0; i < triangles.size(); ++i) {
     double x1, y1, z1, x2, y2, z2, x3, y3, z3;
     Triangle t = triangles[i];
@@ -264,7 +265,7 @@ int main(int argc, char *argv[]) {
     Vi = 1.0 / 6.0 * (-x3 * y2 * z1 + x2 * y3 * z1 + x3 * y1 * z2 -
                       x1 * y3 * z2 - x2 * y1 * z3 + x1 * y2 * z3);
 
-	ofstream& output = (Vi >= 0 ? positive : negative);
+	//ofstream& output = (Vi >= 0 ? positive : negative);
 
 	// triangle itself
 	//output << "facet normal 0.0 0.0 0.0" << endl;
@@ -299,20 +300,18 @@ int main(int argc, char *argv[]) {
 	//output << "vertex " << setprecision(2) << x3 << ' ' << y3 << ' ' << z3 << endl;
 	//output << "endloop" << endl;
 	//output << "endfacet" << endl;
-
 	// DEBUG
 
-    cout << "V[" << i << "] = " << Vi << "\n";
+    //cout << "V[" << i << "] = " << Vi << "\n";
 
     V += Vi;
   }
 
-  // Put STL post-amble
-  positive << "endsolid positive";
-  negative << "endsolid negative";
-
-  positive.close();
-  negative.close();
+  // DEBUG Put STL post-amble
+  //positive << "endsolid positive";
+  //negative << "endsolid negative";
+  //positive.close();
+  //negative.close();
 
   cout << "־בתול: " << V << endl;
 
