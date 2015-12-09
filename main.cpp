@@ -318,7 +318,6 @@ int main(int argc, char *argv[]) {
 
   end = chrono::system_clock::now();
   chrono::duration<double> elapsed_seconds = end - start;
-  time_t end_time = chrono::system_clock::to_time_t(end);
 
   cout << "Завершено за " << elapsed_seconds.count() << " с\n";
 
