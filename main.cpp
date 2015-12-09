@@ -8,6 +8,7 @@
 #include <map>
 #include <unordered_set>
 #include <conio.h>
+#include <iomanip>
 
 struct Point {
 
@@ -153,14 +154,14 @@ int main(int argc, char *argv[]) {
 
     fin.seekg(0);
 
-    fin.read((char *)Header, sizeof(Header));
+    fin.read((char *)Header, 80);
     fin.read((char *)&Number_of_triangles, sizeof(Number_of_triangles));
     cout << "Название модели: " << Header << "\n"
-         << "Треугольников: " << Number_of_triangles << " : \n";
+         << "Треугольников: " << Number_of_triangles << " \n";
 
     // for (unsigned int i = 0; i < 10; i++) //30треугольников
-    for (unsigned int i = 0; i < Number_of_triangles;
-         i++) //считывает все треугольники
+    for (unsigned int k = 0; k < Number_of_triangles;
+         k++) //считывает все треугольники
     {
       fin.read((char *)s.Normal_vector, sizeof(s.Normal_vector));
 
@@ -201,6 +202,8 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  fin.close();
+
   // Sort points by index because OFF doesn't allow to specify point index
   // explicitly
   vector<point_and_index> points_sorted(points.begin(), points.end());
@@ -223,9 +226,25 @@ int main(int argc, char *argv[]) {
   int i = 0;
 
   vector<Point> pts;
-  for (auto pt : points)
+  for (auto pt : points_sorted)
     pts.push_back(pt.first);
 
+  // DEBUG output volume elements to separate file
+  ofstream positive, negative;
+
+  positive.open("debug_positive.stl");
+  negative.open("debug_negative.stl");
+
+  if (!positive.is_open() || !negative.is_open()) {
+    cerr << "Could not open debug files";
+    return 1;
+  }
+
+  // Put STL preamble
+  positive << "solid positive" << endl;
+  negative << "solid negative" << endl;
+
+  // Calculate volume
   for (i = 0; i < triangles.size(); ++i) {
     double x1, y1, z1, x2, y2, z2, x3, y3, z3;
     Triangle t = triangles[i];
@@ -245,10 +264,55 @@ int main(int argc, char *argv[]) {
     Vi = 1.0 / 6.0 * (-x3 * y2 * z1 + x2 * y3 * z1 + x3 * y1 * z2 -
                       x1 * y3 * z2 - x2 * y1 * z3 + x1 * y2 * z3);
 
+	ofstream& output = (Vi >= 0 ? positive : negative);
+
+	// triangle itself
+	//output << "facet normal 0.0 0.0 0.0" << endl;
+	//output << "outer loop" << endl;
+	//output << "vertex " << setprecision(2) << x1 << ' ' << y1 << ' ' << z1 << endl;
+	//output << "vertex " << setprecision(2) << x2 << ' ' << y2 << ' ' << z2 << endl;
+	//output << "vertex " << setprecision(2) << x3 << ' ' << y3 << ' ' << z3 << endl;
+	//output << "endloop" << endl;
+	//output << "endfacet" << endl;
+	//
+	//// 3 triangles connecting to the O
+	//output << "facet normal 0.0 0.0 0.0" << endl;
+	//output << "outer loop" << endl;
+	//output << "vertex " << setprecision(2) << x1 << ' ' << y1 << ' ' << z1 << endl;
+	//output << "vertex " << setprecision(2) << x2 << ' ' << y2 << ' ' << z2 << endl;
+	//output << "vertex " << setprecision(2) << 0 << ' ' << 0 << ' ' << 0 << endl;
+	//output << "endloop" << endl;
+	//output << "endfacet" << endl;
+
+	//output << "facet normal 0.0 0.0 0.0" << endl;
+	//output << "outer loop" << endl;
+	//output << "vertex " << setprecision(2) << x1 << ' ' << y1 << ' ' << z1 << endl;
+	//output << "vertex " << setprecision(2) << 0 << ' ' << 0 << ' ' << 0 << endl;
+	//output << "vertex " << setprecision(2) << x3 << ' ' << y3 << ' ' << z3 << endl;
+	//output << "endloop" << endl;
+	//output << "endfacet" << endl;
+
+	//output << "facet normal 0.0 0.0 0.0" << endl;
+	//output << "outer loop" << endl;
+	//output << "vertex " << setprecision(2) << 0 << ' ' << 0 << ' ' << 0 << endl;
+	//output << "vertex " << setprecision(2) << x2 << ' ' << y2 << ' ' << z2 << endl;
+	//output << "vertex " << setprecision(2) << x3 << ' ' << y3 << ' ' << z3 << endl;
+	//output << "endloop" << endl;
+	//output << "endfacet" << endl;
+
+	// DEBUG
+
     cout << "V[" << i << "] = " << Vi << "\n";
 
     V += Vi;
   }
+
+  // Put STL post-amble
+  positive << "endsolid positive";
+  negative << "endsolid negative";
+
+  positive.close();
+  negative.close();
 
   cout << "Объем: " << V << endl;
 
